@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kylechadha/rgn-app/models"
+	"github.com/opencamp-hq/core/models"
 )
 
 const availEndpoint = "/camps/availability/campground/%s/month"

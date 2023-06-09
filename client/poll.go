@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kylechadha/rgn-app/models"
+	"github.com/opencamp-hq/core/models"
 )
 
 // Poll is a blocking operation. To poll multiple campgrounds call this method

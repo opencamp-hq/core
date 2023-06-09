@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/inconshreveable/log15"
-	"github.com/kylechadha/rgn-app/models"
+	"github.com/opencamp-hq/core/models"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )

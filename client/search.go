@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/kylechadha/rgn-app/models"
+	"github.com/opencamp-hq/core/models"
 )
 
 const searchEndpoint = "/search/suggest"
