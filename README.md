@@ -9,6 +9,67 @@
 
 Simple Go library for interacting with the recreation.gov API.
 
+## Usage
+
+### Check campground availability
+```
+l := log15.New()
+c := client.New(l, 10*time.Second)
+
+sites, err := c.Availability(campgroundID, start, end)
+if err != nil {
+  // handle err
+}
+
+if len(sites) == 0 {
+  fmt.Println("Sorry we didn't find any available campsites!")
+} else {
+  fmt.Println("The following sites are available for those dates:")
+  for _, s := range sites {
+    fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
+  }
+}
+```
+
+### Poll campground availability
+```
+l := log15.New()
+c := client.New(l, 10*time.Second)
+ctx := context.Background()
+
+// Blocking operation.
+sites, err := c.Poll(ctx, campgroundID, start, end, interval)
+if err != nil {
+  // handle err
+}
+
+fmt.Println("The following sites are available for those dates:")
+for _, s := range sites {
+  fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
+}
+```
+
+### Search for a campground Id
+```
+l := log15.New()
+c := client.New(l, 10*time.Second)
+campgrounds, err := c.Search(args[0])
+if err != nil {
+  // handle err
+}
+if len(campgrounds) == 0 {
+  fmt.Println("Sorry, no campgrounds with that name were found.")
+  return
+}
+
+bytes, err := json.MarshalIndent(campgrounds, "", "  ")
+if err != nil {
+  // handle err
+}
+
+fmt.Println(string(bytes))
+```
+
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
