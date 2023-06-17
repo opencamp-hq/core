@@ -69,7 +69,7 @@ if err != nil {
   // handle err
 }
 
-fmt.Println("The following sites are available for those dates:")
+fmt.Println("Just in! The following sites are now available for those dates:")
 for _, s := range sites {
   fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
 }

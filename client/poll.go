@@ -18,7 +18,7 @@ func (c *Client) Poll(ctx context.Context, campgroundID string, start, end time.
 		return sites, nil
 	}
 
-	c.log.Info("No sites available atm, starting polling!", "interval", interval)
+	c.log.Info("No sites available at the moment, starting polling!", "interval", interval)
 	t := time.NewTicker(interval)
 	for {
 		select {
