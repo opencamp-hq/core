@@ -11,12 +11,38 @@ Simple Go library for interacting with the recreation.gov API.
 
 ## Usage
 
+- [Search for a campground](#search-for-a-campground)
+- [Check campground availability](#check-campground-availability)
+- [Poll campground availability](#poll-campground-availability)
+- [Retrieve campground data](#retrieve-campground-data-by-id)
+
+### Search for a campground
+```
+l := log15.New()
+c := client.New(l, 10*time.Second)
+campgrounds, err := c.Suggest("kirk creek")
+if err != nil {
+  // handle err
+}
+if len(campgrounds) == 0 {
+  fmt.Println("Sorry, no campgrounds with that name were found.")
+  return
+}
+
+bytes, err := json.MarshalIndent(campgrounds, "", "  ")
+if err != nil {
+  // handle err
+}
+
+fmt.Println(string(bytes))
+```
+
 ### Check campground availability
 ```
 l := log15.New()
 c := client.New(l, 10*time.Second)
 
-sites, err := c.Availability(campgroundID, start, end)
+sites, err := c.Availability("233116", "09-11-2023", "09-13-2023")
 if err != nil {
   // handle err
 }
@@ -38,7 +64,7 @@ c := client.New(l, 10*time.Second)
 ctx := context.Background()
 
 // Blocking operation.
-sites, err := c.Poll(ctx, campgroundID, start, end, interval)
+sites, err := c.Poll(ctx, "233116", "09-11-2023", "09-13-2023", "1m")
 if err != nil {
   // handle err
 }
@@ -49,20 +75,16 @@ for _, s := range sites {
 }
 ```
 
-### Search for a campground Id
+### Retrieve campground data by ID
 ```
 l := log15.New()
 c := client.New(l, 10*time.Second)
-campgrounds, err := c.Suggest(args[0])
+campground, err := c.Search("233116")
 if err != nil {
   // handle err
 }
-if len(campgrounds) == 0 {
-  fmt.Println("Sorry, no campgrounds with that name were found.")
-  return
-}
 
-bytes, err := json.MarshalIndent(campgrounds, "", "  ")
+bytes, err := json.MarshalIndent(campground, "", "  ")
 if err != nil {
   // handle err
 }
