@@ -53,7 +53,7 @@ for _, s := range sites {
 ```
 l := log15.New()
 c := client.New(l, 10*time.Second)
-campgrounds, err := c.Search(args[0])
+campgrounds, err := c.Suggest(args[0])
 if err != nil {
   // handle err
 }

@@ -2,26 +2,22 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/opencamp-hq/core/models"
 )
 
-const searchEndpoint = "/search/suggest"
+const searchEndpoint = "/search"
 
-// TODO: Implement functionality to search by a park name (joshua tree) or area (big sur, ca)
-// and return all campgrounds that match. Might be a bit tricky to do deterministically, unless
-// we break it out into multiple steps?
-
-func (c *Client) Search(query string) ([]models.Campground, error) {
-	c.log.Debug("Searching for campgrounds", "query", query)
+func (c *Client) SearchByID(campgroundID string) (*models.Campground, error) {
+	c.log.Debug("Searching for campgrounds by ID", "campgroundID", campgroundID)
 
 	qp := url.Values{}
-	qp.Add("q", query)
-	qp.Add("geocoder", "true")
+	qp.Add("fq", "entity_type:campground")
+	qp.Add("fq", "entity_id:"+campgroundID)
 
-	resp, err := c.Do(searchEndpoint, qp)
+	resp, err := c.Do(suggestEndpoint, qp)
 	if err != nil {
 		return nil, err
 	}
@@ -32,21 +28,17 @@ func (c *Client) Search(query string) ([]models.Campground, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// Filter non-campgrounds from the search results.
-	end := 0
-	for i, c := range sr.Campgrounds {
-		if strings.ToLower(c.EntityType) == "campground" {
-			sr.Campgrounds[end] = sr.Campgrounds[i]
-			sr.Campgrounds[end].Name = strings.Title(strings.ToLower(c.Name))
-			end++
-		}
+	if len(sr.Campgrounds) > 1 {
+		return nil, fmt.Errorf("More than one campground returned (%d) for ID '%s'", sr.Size, campgroundID)
 	}
 
-	sr.Campgrounds = sr.Campgrounds[:end]
-	return sr.Campgrounds, nil
+	return sr.Campgrounds[0], nil
 }
 
 type SearchResponse struct {
-	Campgrounds []models.Campground `json:"inventory_suggestions"`
+	Campgrounds           []*models.Campground `json:"results"`
+	Size                  int                  `json:"size"`
+	SpellingAutocorrected bool                 `json:"spelling_autocorrected"`
+	Start                 string               `json:"start"`
+	Total                 int                  `json:"total"`
 }

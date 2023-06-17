@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/opencamp-hq/core/models"
@@ -32,7 +31,7 @@ func (c *Client) Poll(ctx context.Context, campgroundID string, start, end time.
 			if len(sites) > 0 {
 				return sites, nil
 			}
-			c.log.Info(fmt.Sprintf("Sorry, no available campsites were found for your dates. We'll try again in %v", interval))
+			c.log.Info("Sorry, no available campsites were found for your dates. We'll try again")
 		case <-ctx.Done():
 			return nil, nil
 		}
