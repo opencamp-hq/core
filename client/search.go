@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/opencamp-hq/core/models"
 )
@@ -17,7 +18,7 @@ func (c *Client) SearchByID(campgroundID string) (*models.Campground, error) {
 	qp.Add("fq", "entity_type:campground")
 	qp.Add("fq", "entity_id:"+campgroundID)
 
-	resp, err := c.Do(suggestEndpoint, qp)
+	resp, err := c.Do(searchEndpoint, qp)
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +33,7 @@ func (c *Client) SearchByID(campgroundID string) (*models.Campground, error) {
 		return nil, fmt.Errorf("More than one campground returned (%d) for ID '%s'", sr.Size, campgroundID)
 	}
 
+	sr.Campgrounds[0].Name = strings.Title(strings.ToLower(sr.Campgrounds[0].Name))
 	return sr.Campgrounds[0], nil
 }
 

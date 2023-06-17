@@ -59,15 +59,15 @@ type Campground struct {
 	ParentType      string `json:"parent_type"`
 	PreviewImageURL string `json:"preview_image_url"`
 	PriceRange      struct {
-		AmountMax int    `json:"amount_max"`
-		AmountMin int    `json:"amount_min"`
-		PerUnit   string `json:"per_unit"`
+		AmountMax float64 `json:"amount_max"`
+		AmountMin float64 `json:"amount_min"`
+		PerUnit   string  `json:"per_unit"`
 	} `json:"price_range"`
 	Rate []struct {
 		EndDate time.Time `json:"end_date"`
 		Prices  []struct {
-			Amount    int    `json:"amount"`
-			Attribute string `json:"attribute"`
+			Amount    float64 `json:"amount"`
+			Attribute string  `json:"attribute"`
 		} `json:"prices"`
 		RateMap struct {
 			PeakSTANDARDNONELECTRIC struct {
