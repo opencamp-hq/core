@@ -1,53 +1,75 @@
 package notify
 
-import (
-	"fmt"
-	"os"
-	"strings"
+import "github.com/opencamp-hq/core/models"
 
-	"github.com/inconshreveable/log15"
-	"github.com/opencamp-hq/core/models"
-	"github.com/sendgrid/sendgrid-go"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
-)
-
-type EmailNotifier struct {
-	log       log15.Logger
-	apiKey    string
-	fromName  string
-	fromEmail string
+type EmailData struct {
+	Campground     *models.Campground
+	StartDate      string
+	EndDate        string
+	AvailableSites models.Campsites
 }
 
-func (n *EmailNotifier) Notify(toName, toEmail string, cg models.Campground, startDate, endDate string, sites models.Campsites) error {
-	from := mail.NewEmail(n.fromName, n.fromEmail)
-	subject := "Good news! Your campground is available"
-	to := mail.NewEmail(toName, toEmail)
+var EmailTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Good news! {{.Campground.Name}} is available</title>
+	<style>
+		body { font-family: Arial, sans-serif; }
+		h1 { color: #333; }
+		p { color: #666; }
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		th, td {
+			border: 1px solid #dddddd;
+			text-align: left;
+			padding: 8px;
+		}
+		tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+		#footer {
+			margin-top: 50px;
+			color: #999;
+			font-size: 0.8em;
+		}
+	</style>
+</head>
 
-	content := fmt.Sprintf(`
-	'%s' has sites available from %s to %s!
+<body>
+	<h1>{{.Campground.Name}} now has campsites available!</h1>
+	<p>{{.Campground.ParentName}}, near {{.Campground.City}}</p>
+	<p><strong>Check-in:</strong> {{.StartDate}}</p>
+	<p><strong>Check-out:</strong> {{.EndDate}}</p>
 
-// HERE
-// in the case of multiple sites being available at the same time, want to support that...
-// so yeah need to do some sort of strings.Join or iterator
-// ... does go templating have anything built in?
-//  .. can we attach a template language to this?
-
-
-	Sites:
-	%s
-	
-	To reserve: <link goes here>`, campgroundName, startDate, endDate, " - Site "+strings.Join(sites, "\n - Site "))
-
-	plainTextContent := content
-	htmlContent := content
-	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
-
-	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
-	resp, err := client.Send(message)
-	if err != nil {
-		return err
-	}
-
-	n.log.Debug("Email sent", "status", resp.StatusCode, "to", to)
-	return nil
-}
+	<table>
+		<tr>
+			<th>Campsite</th>
+			<th>Loop</th>
+			<th>Type</th>
+			<th>Use</th>
+			<th>Min People</th>
+			<th>Max People</th>
+			<th>Book Now</th>
+		</tr>
+		{{range .AvailableSites}}
+		<tr>
+			<td>{{.Site}}</td>
+			<td>{{.Loop}}</td>
+			<td>{{.CampsiteType}}</td>
+			<td>{{.TypeOfUse}}</td>
+			<td>{{.MinNumPeople}}</td>
+			<td>{{.MaxNumPeople}}</td>
+			<td><a href="https://www.recreation.gov/camping/campsites/{{.CampsiteID}}">Book Now</a></td>
+		</tr>
+		{{end}}
+	</table>
+	<div id="footer">
+		<hr>
+		<p style="font-size: small;"><em>Brought to you by OpenCamp</em></p>
+	</div>
+</body>
+</html>
+`
