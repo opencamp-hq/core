@@ -9,12 +9,14 @@
 
 Simple Go library for interacting with the recreation.gov API.
 
-## Usage
+- [Usage](#usage)
+  - [Search for a campground](#search-for-a-campground)
+  - [Check campground availability](#check-campground-availability)
+  - [Poll campground availability](#poll-campground-availability)
+  - [Retrieve campground data by ID](#retrieve-campground-data-by-id)
+- [License](#license)
 
-- [Search for a campground](#search-for-a-campground)
-- [Check campground availability](#check-campground-availability)
-- [Poll campground availability](#poll-campground-availability)
-- [Retrieve campground data](#retrieve-campground-data-by-id)
+## Usage
 
 ### Search for a campground
 ```
@@ -79,7 +81,7 @@ for _, s := range sites {
 ```
 l := log15.New()
 c := client.New(l, 10*time.Second)
-campground, err := c.Search("233116")
+campground, err := c.SearchByID("233116")
 if err != nil {
   // handle err
 }
