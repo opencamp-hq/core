@@ -17,6 +17,10 @@ type SMTPConfig struct {
 	Password string
 }
 
+func (cfg SMTPConfig) Valid() bool {
+	return cfg.Host != "" && cfg.Port != "" && cfg.Email != "" && cfg.Password != ""
+}
+
 type SMTPSender struct {
 	cfg      SMTPConfig
 	template *template.Template
